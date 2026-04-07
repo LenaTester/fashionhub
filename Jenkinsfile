@@ -156,9 +156,5 @@ spec:
         unstable {
             echo '⚠ Some tests were unstable.'
         }
-
-        cleanup {
-            deleteDir()
-        }
     }
 }

@@ -25,8 +25,8 @@ This project contains automated tests for the FashionHub application using Playw
 Create a `.env` file in the project root with your test credentials:
 
 ```env
-USER_NAME=demouser
-PASSWORD=fashion123
+USER_NAME=<your_user>
+PASSWORD=<your-password>
 ```
 
 ### Environment Selection
