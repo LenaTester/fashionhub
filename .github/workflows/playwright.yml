@@ -17,6 +17,7 @@ on:
         default: chromium
         type: choice
         options:
+          - all
           - chromium
           - firefox
           - webkit
@@ -49,10 +50,8 @@ jobs:
     - name: Install dependencies
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: npm ci
-    - name: Install WebKit native dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libwoff2dec1
+    - name: Install Playwright system dependencies
+      run: npx playwright install-deps webkit
     - name: Start local app (if local environment)
       if: ${{ github.event.inputs.environment == 'local' }}
       run: |
@@ -69,7 +68,11 @@ jobs:
       run: |
         CONFIG_FILE=playwright.config.${{ github.event.inputs.environment }}.ts
         echo "Running Playwright tests using ${CONFIG_FILE} on project ${{ github.event.inputs.project }}"
-        npx playwright test --config=${CONFIG_FILE} --project=${{ github.event.inputs.project }}
+        if [ "${{ github.event.inputs.project }}" = "all" ]; then
+          npx playwright test --config=${CONFIG_FILE}
+        else
+          npx playwright test --config=${CONFIG_FILE} --project=${{ github.event.inputs.project }}
+        fi
     - name: Stop local app (if local environment)
       if: ${{ github.event.inputs.environment == 'local' }}
       run: |
