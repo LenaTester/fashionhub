@@ -23,7 +23,6 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-    if: ${{ github.event.inputs.environment == 'production' || github.event.inputs.environment == 'staging' }}
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
     steps:
@@ -31,8 +30,28 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+    - name: Cache Node modules
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-modules-
+    - name: Cache Playwright browsers
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-playwright-
     - name: Install dependencies
       run: npm ci
+    - name: Start local app (if local environment)
+      if: ${{ github.event.inputs.environment == 'local' }}
+      run: |
+        docker run -d --name fashionhub-app -p 4000:4000 pocketaces2/fashionhub-demo-app:latest
+        # Wait for app to be ready
+        timeout 60 bash -c 'until curl -f http://localhost:4000/fashionhub/; do sleep 2; done'
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
@@ -40,6 +59,11 @@ jobs:
         USER_NAME: ${{ secrets.USER_NAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
       run: PLAYWRIGHT_ENV=${{ github.event.inputs.environment }} npx playwright test --project=${{ github.event.inputs.project }}
+    - name: Stop local app (if local environment)
+      if: ${{ github.event.inputs.environment == 'local' }}
+      run: |
+        docker stop fashionhub-app
+        docker rm fashionhub-app
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
