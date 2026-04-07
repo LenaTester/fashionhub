@@ -36,7 +36,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-modules-
     - name: Cache Playwright browsers
@@ -44,7 +44,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-playwright-
     - name: Install dependencies
