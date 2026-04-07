@@ -97,34 +97,40 @@ spec:
         stage('Run Tests') {
             steps {
                 script {
-                    if (params.ENVIRONMENT == 'local') {
-                        container('docker') {
+                    def credsId = params.ENVIRONMENT == 'production' ? 'fashionhub-prod' : 
+                                   params.ENVIRONMENT == 'staging' ? 'fashionhub-staging' : 
+                                   'fashionhub-local'
+                    
+                    withCredentials([usernamePassword(credentialsId: credsId, 
+                                                     usernameVariable: 'USER_NAME', 
+                                                     passwordVariable: 'PASSWORD')]) {
+                        if (params.ENVIRONMENT == 'local') {
+                            container('docker') {
+                                sh '''
+                                    echo "Starting local app..."
+                                    docker run -d --name fashionhub-app -p 4000:4000 pocketaces2/fashionhub-demo-app:latest
+                                    timeout 60 bash -c 'until curl -f http://localhost:4000/fashionhub/; do sleep 2; done'
+                                '''
+                            }
+                        }
+                        container('node') {
                             sh '''
-                                echo "Starting local app..."
-                                docker run -d --name fashionhub-app -p 4000:4000 pocketaces2/fashionhub-demo-app:latest
-                                timeout 60 bash -c 'until curl -f http://localhost:4000/fashionhub/; do sleep 2; done'
+                                echo "Running Playwright tests on ${PLAYWRIGHT_ENV} environment with ${BROWSER} browser(s)..."
+                                if [ "${BROWSER}" = "all" ]; then
+                                    npx playwright test
+                                else
+                                    npx playwright test --project=${BROWSER}
+                                fi
                             '''
                         }
-                    }
-                }
-                container('node') {
-                    sh '''
-                        echo "Running Playwright tests on ${PLAYWRIGHT_ENV} environment with ${BROWSER} browser(s)..."
-                        if [ "${BROWSER}" = "all" ]; then
-                            npx playwright test
-                        else
-                            npx playwright test --project=${BROWSER}
-                        fi
-                    '''
-                }
-                script {
-                    if (params.ENVIRONMENT == 'local') {
-                        container('docker') {
-                            sh '''
-                                echo "Stopping local app..."
-                                docker stop fashionhub-app
-                                docker rm fashionhub-app
-                            '''
+                        if (params.ENVIRONMENT == 'local') {
+                            container('docker') {
+                                sh '''
+                                    echo "Stopping local app..."
+                                    docker stop fashionhub-app
+                                    docker rm fashionhub-app
+                                '''
+                            }
                         }
                     }
                 }
