@@ -11,7 +11,7 @@ This project contains automated tests for the FashionHub application using Playw
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/LenaTester/fashionhub.git
    cd fashionhub
    ```
 
@@ -56,13 +56,6 @@ npx playwright test --config=playwright.config.staging.ts
 npx playwright test --config=playwright.config.local.ts
 ```
 
-## Running Tests
-
-### Run all tests
-```bash
-npx playwright test
-```
-
 ### Run tests on a specific browser (e.g. production)
 ```bash
 npx playwright test --config=playwright.config.production.ts --project=chromium
@@ -96,7 +89,6 @@ fashionhub/
 │   └── account.page.ts  # Account/dashboard page
 ├── tests/
 │   └── login.spec.ts    # Login test scenarios
-├── playwright.config.ts  # Default Playwright configuration
 ├── playwright.config.production.ts  # Production environment config
 ├── playwright.config.staging.ts     # Staging environment config
 ├── playwright.config.local.ts       # Local environment config
@@ -119,8 +111,8 @@ This project includes a `Jenkinsfile` for running tests in Jenkins.
 #### Setup
 
 1. Create a new **Pipeline** job in Jenkins
-2. Configure the job to use **Pipeline script from SCM**
-3. Point to your repository and select the `Jenkinsfile`
+2. Configure the job to use **Pipeline script from Git**
+3. Point to the repository and select the `Jenkinsfile`
 4. Ensure Jenkins has Node.js installed
 5. Store your `.env` file securely in Jenkins credentials or on the Jenkins agent
 
