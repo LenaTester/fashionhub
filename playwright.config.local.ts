@@ -1,26 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import { config as dotenvConfig } from 'dotenv';
 
-dotenvConfig({ path: '.env' });
-
-const baseURLs: Record<string, string> = {
-  local: 'http://localhost:4000',
-  staging: 'https://staging-env',
-  production: 'https://pocketaces2.github.io',
-};
-
-const env = process.env.PLAYWRIGHT_ENV?.toLowerCase() || 'production';
-const baseURL = baseURLs[env] || baseURLs.production;
-
-if (!baseURLs[env]) {
-  console.warn(
-    `Unknown PLAYWRIGHT_ENV="${process.env.PLAYWRIGHT_ENV}". Using production baseURL.`
-  );
-}
-
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+// Load local environment variables
+dotenvConfig({ path: '.env-local' });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -39,7 +21,7 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL,
+    baseURL: 'http://localhost:4000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -85,7 +67,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   // webServer: {
-  //   command: 'npm run start',
+  //   command: 'docker run -d --name fashionhub-app -p 4000:4000 pocketaces2/fashionhub-demo-app:latest',
   //   url: 'http://localhost:4000/fashionhub/',
   //   reuseExistingServer: !process.env.CI,
   // },

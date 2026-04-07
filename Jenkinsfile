@@ -54,7 +54,6 @@ spec:
     environment {
         NODE_ENV = 'test'
         CI = 'true'
-        PLAYWRIGHT_ENV = "${params.ENVIRONMENT}"
     }
 
     stages {
@@ -109,11 +108,11 @@ spec:
                         }
                         container('node') {
                             sh '''
-                                echo "Running Playwright tests on ${PLAYWRIGHT_ENV} environment with ${BROWSER} browser(s)..."
+                                echo "Running Playwright tests on ${ENVIRONMENT} environment with ${BROWSER} browser(s)..."
                                 if [ "${BROWSER}" = "all" ]; then
-                                    npx playwright test
+                                    npx playwright test --config=playwright.config.${ENVIRONMENT}.ts
                                 else
-                                    npx playwright test --project=${BROWSER}
+                                    npx playwright test --config=playwright.config.${ENVIRONMENT}.ts --project=${BROWSER}
                                 fi
                             '''
                         }

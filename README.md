@@ -22,7 +22,13 @@ This project contains automated tests for the FashionHub application using Playw
 
 ## Configuration
 
-Create a `.env` file in the project root with your test credentials:
+Create environment-specific `.env` files in the project root:
+
+- `.env-production` - Production environment credentials
+- `.env-staging` - Staging environment credentials  
+- `.env-local` - Local environment credentials
+
+Example `.env-production`:
 
 ```env
 USER_NAME=<your_user>
@@ -33,16 +39,21 @@ PASSWORD=<your-password>
 
 The project supports three environments:
 
-- **Local**: `http://localhost:4000/fashionhub/`
-- **Staging**: `https://staging-env/fashionhub/`
-- **Production**: `https://pocketaces2.github.io/fashionhub/`
+- **Local**: `http://localhost:4000`
+- **Staging**: `https://staging-env`
+- **Production**: `https://pocketaces2.github.io`
 
-Production is the default environment. To run tests against a different environment, set the `PLAYWRIGHT_ENV` variable:
+To run tests against a different environment, use the specific config file:
 
 ```bash
-PLAYWRIGHT_ENV=local npx playwright test
-PLAYWRIGHT_ENV=staging npx playwright test
-PLAYWRIGHT_ENV=production npx playwright test
+# Production environment
+npx playwright test --config=playwright.config.production.ts
+
+# Staging environment
+npx playwright test --config=playwright.config.staging.ts
+
+# Local environment (starts Docker container automatically)
+npx playwright test --config=playwright.config.local.ts
 ```
 
 ## Running Tests
@@ -52,28 +63,22 @@ PLAYWRIGHT_ENV=production npx playwright test
 npx playwright test
 ```
 
-### Run tests on a specific browser
+### Run tests on a specific browser (e.g. production)
 ```bash
-npx playwright test --project=chromium
-npx playwright test --project=firefox
-npx playwright test --project=webkit
+npx playwright test --config=playwright.config.production.ts --project=chromium
+npx playwright test --config=playwright.config.production.ts --project=firefox
+npx playwright test --config=playwright.config.production.ts --project=webkit
 ```
 
-### Run tests in a specific environment
+### Run a specific test file (e.g. production)
 ```bash
-PLAYWRIGHT_ENV=local npx playwright test
-PLAYWRIGHT_ENV=staging npx playwright test
+npx playwright test --config=playwright.config.production.ts tests/login.spec.ts
 ```
 
-### Run a specific test file
+### Run tests in debug/headed mode (e.g. production)
 ```bash
-npx playwright test tests/login.spec.ts
-```
-
-### Run tests in debug/headed mode
-```bash
-npx playwright test --headed
-npx playwright test --debug
+npx playwright test --config=playwright.config.production.ts --headed
+npx playwright test --config=playwright.config.production.ts --debug
 ```
 
 ### View test results
@@ -91,36 +96,21 @@ fashionhub/
 │   └── account.page.ts  # Account/dashboard page
 ├── tests/
 │   └── login.spec.ts    # Login test scenarios
-├── playwright.config.ts  # Playwright configuration
+├── playwright.config.ts  # Default Playwright configuration
+├── playwright.config.production.ts  # Production environment config
+├── playwright.config.staging.ts     # Staging environment config
+├── playwright.config.local.ts       # Local environment config
 ├── tsconfig.json        # TypeScript configuration
 ├── package.json         # Project dependencies
-├── .env                 # Environment variables (credentials)
+├── .env-*               # Environment-specific credential files
 └── README.md           # This file
-```
-
-## Test Structure
-
-Tests follow the Page Object Model (POM) pattern for better maintainability:
-
-- **Page Objects** (`page-objects/`): Encapsulate selectors and interactions for each page
-- **Test Specs** (`tests/`): Define test scenarios and assertions
-
-Example test run:
-```typescript
-test('Successful login', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  const accountPage = new AccountPage(page);
-  
-  await loginPage.login('demouser', 'fashion123');
-  await expect(accountPage.welcomeMessage).toHaveText('Welcome, demouser!');
-});
 ```
 
 ## CI/CD
 
 ### GitHub Actions
 
-The project includes GitHub Actions workflow for automated testing. Tests run on the production environment by default.
+The project includes GitHub Actions workflow for automated testing. Tests run on the production environment and chromium browser by default.
 
 ### Jenkins
 
@@ -131,7 +121,7 @@ This project includes a `Jenkinsfile` for running tests in Jenkins.
 1. Create a new **Pipeline** job in Jenkins
 2. Configure the job to use **Pipeline script from SCM**
 3. Point to your repository and select the `Jenkinsfile`
-4. Ensure Jenkins has Node.js installed (16+)
+4. Ensure Jenkins has Node.js installed
 5. Store your `.env` file securely in Jenkins credentials or on the Jenkins agent
 
 #### Running Tests in Jenkins
@@ -142,51 +132,3 @@ This project includes a `Jenkinsfile` for running tests in Jenkins.
    - **BROWSER**: Choose between `chromium`, `firefox`, `webkit`, or `all`
 3. Click **Build**
 4. View the test results in the **Playwright Test Report** published to Jenkins
-
-#### Pipeline Parameters
-
-The Jenkinsfile accepts the following parameters:
-
-| Parameter | Options | Description |
-|-----------|---------|-------------|
-| ENVIRONMENT | production, staging, local | Target environment for tests |
-| BROWSER | chromium, firefox, webkit, all | Browser(s) to run tests on |
-
-#### Example Jenkins Build Commands
-
-```bash
-# Run all tests on production with all browsers
-# (Select parameters in Jenkins UI: ENVIRONMENT=production, BROWSER=all)
-
-# Run tests on staging with chromium only
-# (Select parameters in Jenkins UI: ENVIRONMENT=staging, BROWSER=chromium)
-
-# Run tests on local environment with firefox
-# (Select parameters in Jenkins UI: ENVIRONMENT=local, BROWSER=firefox)
-```
-
-#### Jenkins Build Output
-
-The Jenkins pipeline will:
-- Install dependencies with `npm ci`
-- Load environment variables from `.env`
-- Run Playwright tests based on selected parameters
-- Publish the HTML test report to Jenkins
-- Archive test artifacts for later review
-- Display pass/fail status in the build log
-
-## Troubleshooting
-
-### Tests fail with "Cannot find module 'dotenv'"
-```bash
-npm install --save-dev dotenv
-```
-
-### TypeScript type errors
-Make sure you have:
-- `tsconfig.json` in the project root
-- `@types/node` installed: `npm install --save-dev @types/node`
-
-### Tests navigate to wrong URL
-Verify the `PLAYWRIGHT_ENV` is set correctly and the `baseURL` in `playwright.config.ts` matches your target environment.
-
