@@ -77,18 +77,12 @@ spec:
             }
         }
 
-        stage('Load Environment Variables') {
+        stage('Install Playwright Browsers') {
             steps {
                 container('node') {
                     sh '''
-                        echo "Loading environment variables from .env..."
-                        if [ -f .env ]; then
-                            set -a
-                            source .env
-                            set +a
-                        else
-                            echo "Warning: .env file not found"
-                        fi
+                        echo "Installing Playwright browsers..."
+                        npx playwright install --with-deps
                     '''
                 }
             }
