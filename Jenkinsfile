@@ -130,36 +130,17 @@ spec:
                 }
             }
         }
-
-        stage('Generate Report') {
-            steps {
-                container('node') {
-                    sh '''
-                        echo "Test execution completed. Report generated at playwright-report/index.html"
-                    '''
-                }
-            }
-        }
     }
 
     post {
         always {
             container('node') {
-                script {
-                    echo "Collecting test results..."
-                }
+                sh '''
+                    echo "Test execution completed."
+                '''
                 
-                // Publish HTML report
-                publishHTML([
-                    reportDir: 'playwright-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Playwright Test Report',
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true
-                ])
-
-                // Archive test results
+                // Archive test results and reports
+                archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
                 archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
             }
         }
@@ -169,7 +150,7 @@ spec:
         }
 
         failure {
-            echo '✗ Tests failed. Check the Playwright Test Report for details.'
+            echo '✗ Tests failed. Check archived reports for details.'
         }
 
         unstable {
