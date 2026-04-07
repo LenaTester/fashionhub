@@ -49,6 +49,10 @@ jobs:
     - name: Install dependencies
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: npm ci
+    - name: Install WebKit native dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libwoff2dec1
     - name: Start local app (if local environment)
       if: ${{ github.event.inputs.environment == 'local' }}
       run: |
