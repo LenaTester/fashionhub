@@ -1,10 +1,10 @@
-name: Playwright Tests (Docker Compose)
+name: Playwright Tests (Unified)
 
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Select the environment'
+        description: 'Select environment'
         required: true
         default: 'production'
         type: choice
@@ -32,11 +32,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 🐳 Enable Docker caching
+      # 🐳 Docker buildx for caching
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 🧠 Build image with cache
+      # 🧠 Build Playwright image (cached)
       - name: Build test image
         uses: docker/build-push-action@v5
         with:
@@ -46,20 +46,43 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # ▶️ Run docker-compose
-      - name: Run tests with docker-compose
+      # =========================
+      # 🏠 LOCAL (docker-compose)
+      # =========================
+      - name: Run tests (local via docker-compose)
+        if: ${{ github.event.inputs.environment == 'local' }}
         env:
           USER_NAME: ${{ secrets.USER_NAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          PLAYWRIGHT_ENV: ${{ github.event.inputs.environment }}
+          PLAYWRIGHT_ENV: local
           PROJECT: ${{ github.event.inputs.project }}
         run: |
           docker compose up --abort-on-container-exit --exit-code-from tests
 
-      # 🧹 Cleanup
+      # =========================
+      # 🌍 STAGING / PRODUCTION
+      # =========================
+      - name: Run tests (remote envs)
+        if: ${{ github.event.inputs.environment != 'local' }}
+        run: |
+          docker run --rm \
+            -e USER_NAME=${{ secrets.USER_NAME }} \
+            -e PASSWORD=${{ secrets.PASSWORD }} \
+            -e PLAYWRIGHT_ENV=${{ github.event.inputs.environment }} \
+            playwright-tests \
+            bash -c "
+              echo 'Running on ${{ github.event.inputs.environment }}'
+              if [ '${{ github.event.inputs.project }}' = 'all' ]; then
+                npx playwright test
+              else
+                npx playwright test --project=${{ github.event.inputs.project }}
+              fi
+            "
+
+      # 🧹 Cleanup (only matters for compose)
       - name: Tear down containers
         if: always()
-        run: docker compose down -v
+        run: docker compose down -v || true
 
       # 📦 Upload report
       - name: Upload Playwright report
