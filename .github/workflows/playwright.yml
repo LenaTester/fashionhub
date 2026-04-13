@@ -65,13 +65,13 @@ jobs:
       env:
         USER_NAME: ${{ secrets.USER_NAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
+        PLAYWRIGHT_ENV: ${{ github.event.inputs.environment }}
       run: |
-        CONFIG_FILE=playwright.config.${{ github.event.inputs.environment }}.ts
-        echo "Running Playwright tests using ${CONFIG_FILE} on project ${{ github.event.inputs.project }}"
+        echo "Running Playwright tests on environment: ${{ github.event.inputs.environment }} and project: ${{ github.event.inputs.project }}"
         if [ "${{ github.event.inputs.project }}" = "all" ]; then
-          npx playwright test --config=${CONFIG_FILE}
+          npx playwright test
         else
-          npx playwright test --config=${CONFIG_FILE} --project=${{ github.event.inputs.project }}
+          npx playwright test --project=${{ github.event.inputs.project }}
         fi
     - name: Stop local app (if local environment)
       if: ${{ github.event.inputs.environment == 'local' }}

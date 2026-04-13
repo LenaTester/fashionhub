@@ -4,7 +4,7 @@ This project contains automated tests for the FashionHub application using Playw
 
 ## Prerequisites
 
-- **Node.js** 16+ and npm
+- **Node.js** 22+ and npm
 - A `.env` file with test credentials (see Configuration below)
 
 ## Installation
@@ -43,35 +43,43 @@ The project supports three environments:
 - **Staging**: `https://staging-env`
 - **Production**: `https://pocketaces2.github.io`
 
-To run tests against a different environment, use the specific config file:
+To run tests against a different environment, set the `PLAYWRIGHT_ENV` variable:
 
 ```bash
-# Production environment
-npx playwright test --config=playwright.config.production.ts
+# Production environment (default)
+npx playwright test
+# or explicitly:
+PLAYWRIGHT_ENV=production npx playwright test
 
 # Staging environment
-npx playwright test --config=playwright.config.staging.ts
+PLAYWRIGHT_ENV=staging npx playwright test
 
 # Local environment (starts Docker container automatically)
-npx playwright test --config=playwright.config.local.ts
+PLAYWRIGHT_ENV=local npx playwright test
 ```
 
 ### Run tests on a specific browser (e.g. production)
 ```bash
-npx playwright test --config=playwright.config.production.ts --project=chromium
-npx playwright test --config=playwright.config.production.ts --project=firefox
-npx playwright test --config=playwright.config.production.ts --project=webkit
+npx playwright test --project=chromium
+npx playwright test --project=firefox
+npx playwright test --project=webkit
 ```
 
-### Run a specific test file (e.g. production)
+### Run tests on a specific browser and environment
 ```bash
-npx playwright test --config=playwright.config.production.ts tests/login.spec.ts
+# Staging environment with Firefox
+PLAYWRIGHT_ENV=production npx playwright test --project=firefox
 ```
 
-### Run tests in debug/headed mode (e.g. production)
+### Run a specific test file
 ```bash
-npx playwright test --config=playwright.config.production.ts --headed
-npx playwright test --config=playwright.config.production.ts --debug
+npx playwright test tests/login.spec.ts
+```
+
+### Run tests in debug/headed mode
+```bash
+npx playwright test --headed
+npx playwright test --debug
 ```
 
 ### View test results
@@ -89,9 +97,7 @@ fashionhub/
 │   └── account.page.ts  # Account/dashboard page
 ├── tests/
 │   └── login.spec.ts    # Login test scenarios
-├── playwright.config.production.ts  # Production environment config
-├── playwright.config.staging.ts     # Staging environment config
-├── playwright.config.local.ts       # Local environment config
+├── playwright.config.ts  # Unified Playwright configuration with environment support
 ├── tsconfig.json        # TypeScript configuration
 ├── package.json         # Project dependencies
 ├── .env-*               # Environment-specific credential files

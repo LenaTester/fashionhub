@@ -1,8 +1,35 @@
 import { defineConfig, devices } from '@playwright/test';
 import { config as dotenvConfig } from 'dotenv';
 
-// Load local environment variables
-dotenvConfig({ path: '.env-local' });
+// Environment configuration with URLs
+const isDocker = process.env.RUN_IN_DOCKER === 'true';
+
+const environments = {
+  production: {
+    url: 'https://pocketaces2.github.io/fashionhub/login.html',
+    envFile: '.env-production',
+    storageState: 'auth/production-auth.json',
+  },
+  staging: {
+    url: 'https://staging-env/fashionhub/login.html',
+    envFile: '.env-staging',
+    storageState: 'auth/staging-auth.json',
+  },
+  local: {
+    url: isDocker
+      ? 'http://app:4000/fashionhub/login.html'
+      : 'http://localhost:4000/fashionhub/login.html',
+    envFile: '.env-local',
+    storageState: 'auth/local-auth.json',
+  },
+};
+
+// Get the environment from process env or default to production
+const environment = (process.env.PLAYWRIGHT_ENV || 'production') as keyof typeof environments;
+const config = environments[environment];
+
+// Load environment-specific variables
+dotenvConfig({ path: config.envFile });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -21,7 +48,7 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: 'http://localhost:4000',
+    baseURL: config.url,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -43,32 +70,12 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
   ],
 
   /* Run your local dev server before starting the tests */
   // webServer: {
-  //   command: 'docker run -d --name fashionhub-app -p 4000:4000 pocketaces2/fashionhub-demo-app:latest',
-  //   url: 'http://localhost:4000/fashionhub/',
+  //   command: 'npm run start',
+  //   url: 'http://127.0.0.1:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
 });

@@ -7,7 +7,7 @@ kind: Pod
 spec:
   containers:
   - name: node
-    image: node:18
+    image: node:22
     command:
     - sleep
     args:
@@ -108,11 +108,12 @@ spec:
                         }
                         container('node') {
                             sh '''
+                                export PLAYWRIGHT_ENV=${ENVIRONMENT}
                                 echo "Running Playwright tests on ${ENVIRONMENT} environment with ${BROWSER} browser(s)..."
                                 if [ "${BROWSER}" = "all" ]; then
-                                    npx playwright test --config=playwright.config.${ENVIRONMENT}.ts
+                                    npx playwright test
                                 else
-                                    npx playwright test --config=playwright.config.${ENVIRONMENT}.ts --project=${BROWSER}
+                                    npx playwright test --project=${BROWSER}
                                 fi
                             '''
                         }
