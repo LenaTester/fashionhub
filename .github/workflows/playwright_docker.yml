@@ -57,7 +57,7 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           PLAYWRIGHT_ENV: local
         run: |
-          docker compose run --rm tests npx playwright test tests/auth.setup.spec.ts
+          docker compose run --rm tests npx playwright test tests/auth.setup.spec.ts --project=chromium
 
       - name: Run tests (local via docker-compose)
         if: ${{ github.event.inputs.environment == 'local' }}
@@ -82,7 +82,7 @@ jobs:
             playwright-tests \
             bash -c "
               echo 'Running auth setup on ${{ github.event.inputs.environment }}'
-              npx playwright test tests/auth.setup.spec.ts
+              npx playwright test tests/auth.setup.spec.ts --project=chromium
             "
 
       - name: Run tests (remote envs)
