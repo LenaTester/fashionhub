@@ -5,11 +5,18 @@ import { ShoppingCartPage } from '../page-objects/shoppingCart.page';
 
 
 type EnvKey = 'local' | 'staging' | 'production';
-const isCI = !!process.env.CI || !!process.env.IS_DOCKER;
+
+import fs from 'fs';
+
+function isDocker() {
+  // Check for /.dockerenv or if /app exists (common in Docker setups)
+  return fs.existsSync('/.dockerenv') || fs.existsSync('/app');
+}
+
 const envMap = {
   local: '../playwright/.auth/user-local.json',
-  staging: '../playwright/.auth/user-staging.json',
-  production: isCI ? '/app/playwright/.auth/user-production.json' : '../playwright/.auth/user-production.json',
+  staging: isDocker() ? '/app/playwright/.auth/user-staging.json' : '../playwright/.auth/user-staging.json',
+  production: isDocker() ? '/app/playwright/.auth/user-production.json' : '../playwright/.auth/user-production.json',
 };
 const currentEnv = (process.env.PLAYWRIGHT_ENV || 'local') as EnvKey;
 const storageStateFile = envMap[currentEnv] || envMap.local;
