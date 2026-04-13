@@ -8,19 +8,19 @@ const environments = {
   production: {
     url: 'https://pocketaces2.github.io/fashionhub/login.html',
     envFile: '.env-production',
-    storageState: 'auth/production-auth.json',
+    storageState: 'playwright/.auth/user-production.json',
   },
   staging: {
     url: 'https://staging-env/fashionhub/login.html',
     envFile: '.env-staging',
-    storageState: 'auth/staging-auth.json',
+    storageState: 'playwright/.auth/user-staging.json',
   },
   local: {
     url: isDocker
       ? 'http://app:4000/fashionhub/login.html'
       : 'http://localhost:4000/fashionhub/login.html',
     envFile: '.env-local',
-    storageState: 'auth/local-auth.json',
+    storageState: 'playwright/.auth/user-local.json',
   },
 };
 
