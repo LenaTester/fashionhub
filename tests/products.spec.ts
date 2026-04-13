@@ -3,16 +3,17 @@ import { ProductsPage } from '../page-objects/products.page';
 import { TopNavigationPanel } from '../page-objects/topNavigation.panel';
 import { ShoppingCartPage } from '../page-objects/shoppingCart.page';
 
+
 type EnvKey = 'local' | 'staging' | 'production';
+const isCI = !!process.env.CI || !!process.env.IS_DOCKER;
 const envMap = {
   local: '../playwright/.auth/user-local.json',
   staging: '../playwright/.auth/user-staging.json',
-  production: '../playwright/.auth/user-production.json',
+  production: isCI ? '/app/playwright/.auth/user-production.json' : '../playwright/.auth/user-production.json',
 };
 const currentEnv = (process.env.PLAYWRIGHT_ENV || 'local') as EnvKey;
 const storageStateFile = envMap[currentEnv] || envMap.local;
 
-console.log('[products.spec.ts] Using storage state:', storageStateFile);
 test.use({ storageState: storageStateFile });
 
 test.describe("Products tests", () => {
