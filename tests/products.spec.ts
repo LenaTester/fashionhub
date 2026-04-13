@@ -12,6 +12,7 @@ const envMap = {
 const currentEnv = (process.env.PLAYWRIGHT_ENV || 'local') as EnvKey;
 const storageStateFile = envMap[currentEnv] || envMap.local;
 
+console.log('[products.spec.ts] Using storage state:', storageStateFile);
 test.use({ storageState: storageStateFile });
 
 test.describe("Products tests", () => {

@@ -26,5 +26,6 @@ test.describe('Login scenarios', () => {
       await expect(accountPage.welcomeMessage).toHaveText(`Welcome, ${env.USER_NAME}!`);
     });
     await page.context().storageState({ path: authFile });
+    console.log(`[auth.setup] Storage state written to: ${authFile}`);
   });
 });
