@@ -5,9 +5,9 @@ import { ShoppingCartPage } from '../page-objects/shoppingCart.page';
 
 type EnvKey = 'local' | 'staging' | 'production';
 const envMap = {
-  local: 'playwright/.auth/user-local.json',
-  staging: 'playwright/.auth/user-staging.json',
-  production: 'playwright/.auth/user-production.json',
+  local: '../playwright/.auth/user-local.json',
+  staging: '../playwright/.auth/user-staging.json',
+  production: '../playwright/.auth/user-production.json',
 };
 const currentEnv = (process.env.PLAYWRIGHT_ENV || 'local') as EnvKey;
 const storageStateFile = envMap[currentEnv] || envMap.local;
