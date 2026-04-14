@@ -62,7 +62,8 @@ projects: [
   },
   {
     name: 'chromium',
-    dependencies: ['setup'], // 👈 THIS FIXES EVERYTHING
+    dependencies: ['setup'],
+    testIgnore: /auth\.setup\.spec\.ts/,
     use: {
       ...devices['Desktop Chrome'],
       storageState: 'playwright/.auth/user-production.json',
@@ -70,7 +71,8 @@ projects: [
   },
   {
     name: 'firefox',
-    dependencies: ['setup'], // 👈 also here
+    dependencies: ['setup'],
+    testIgnore: /auth\.setup\.spec\.ts/,
     use: {
       ...devices['Desktop Firefox'],
       storageState: 'playwright/.auth/user-production.json',
@@ -78,13 +80,14 @@ projects: [
   },
   {
     name: 'webkit',
-    dependencies: ['setup'], // 👈 and here
+    dependencies: ['setup'],
+    testIgnore: /auth\.setup\.spec\.ts/,
     use: {
       ...devices['Desktop Safari'],
       storageState: 'playwright/.auth/user-production.json',
     },
   },
-],
+]
 
   /* Run your local dev server before starting the tests */
   // webServer: {
