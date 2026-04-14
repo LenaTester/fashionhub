@@ -55,28 +55,36 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
-      {
-        name: 'setup',
-        testMatch: /auth\.setup\.spec\.ts/,
-      },
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] ,
-        storageState: 'playwright/.auth/user-production.json',
-      },
+projects: [
+  {
+    name: 'setup',
+    testMatch: /auth\.setup\.spec\.ts/,
+  },
+  {
+    name: 'chromium',
+    dependencies: ['setup'], // 👈 THIS FIXES EVERYTHING
+    use: {
+      ...devices['Desktop Chrome'],
+      storageState: 'playwright/.auth/user-production.json',
     },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'], storageState: 'playwright/.auth/user-production.json' },
+  },
+  {
+    name: 'firefox',
+    dependencies: ['setup'], // 👈 also here
+    use: {
+      ...devices['Desktop Firefox'],
+      storageState: 'playwright/.auth/user-production.json',
     },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'], storageState: 'playwright/.auth/user-production.json' },
+  },
+  {
+    name: 'webkit',
+    dependencies: ['setup'], // 👈 and here
+    use: {
+      ...devices['Desktop Safari'],
+      storageState: 'playwright/.auth/user-production.json',
     },
-  ],
+  },
+],
 
   /* Run your local dev server before starting the tests */
   // webServer: {
