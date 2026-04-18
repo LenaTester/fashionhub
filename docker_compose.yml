@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    image: pocketaces2/fashionhub-demo-app:latest
+    container_name: fashionhub-app
+    ports:
+      - "4000:4000"
+
+  tests:
+    image: playwright-tests
+    depends_on:
+      - app
+    environment:
+      - USER_NAME
+      - PASSWORD
+      - PLAYWRIGHT_ENV
+      - PROJECT
+      - RUN_IN_DOCKER=true
+    command: >
+      bash -c "
+        echo 'Waiting for app...' &&
+        until curl -f http://app:4000/fashionhub/; do sleep 2; done &&
+        if [ '$PROJECT' = 'all' ]; then
+          npx playwright test
+        else
+          npx playwright test --project=$PROJECT
+        fi
+      "
