@@ -7,6 +7,7 @@ import { ShoppingCartPage } from '../page-objects/shoppingCart.page';
 type EnvKey = 'local' | 'staging' | 'production';
 
 import fs from 'fs';
+import { isDataView } from 'util/types';
 
 function isDocker() {
   // Check for /.dockerenv or if /app exists (common in Docker setups)
@@ -14,7 +15,7 @@ function isDocker() {
 }
 
 const envMap = {
-  local: '../playwright/.auth/user-local.json',
+  local: isDocker() ? '/app/playwright/.auth/user-local.json' : '../playwright/.auth/user-local.json',
   staging: isDocker() ? '/app/playwright/.auth/user-staging.json' : '../playwright/.auth/user-staging.json',
   production: isDocker() ? '/app/playwright/.auth/user-production.json' : '../playwright/.auth/user-production.json',
 };
