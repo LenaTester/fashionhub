@@ -50,7 +50,7 @@ jobs:
         
       - name: Run tests
         env:
-          RUN_IN_DOCKER: ${{ github.event.inputs.environment == 'local' && 'true' || 'false' }}
+          RUN_IN_DOCKER: true #${{ github.event.inputs.environment == 'local' && 'true' || 'false' }}
           USER_NAME: ${{ secrets.USER_NAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
         run: |
