@@ -48,6 +48,8 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Run tests
+        env:
+          RUN_IN_DOCKER: ${{ github.event.inputs.environment == 'local' && 'true' || 'false' }}
         run: |
           npm install
   
