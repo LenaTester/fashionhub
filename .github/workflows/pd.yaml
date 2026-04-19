@@ -29,7 +29,7 @@ jobs:
         
     # 2. Дополнительные контейнеры (sidecars)
     services:
-      postgres_db:
+      app:
         image: pocketaces2/fashionhub-demo-app:latest
         ports:
           - 4000:4000
@@ -41,8 +41,8 @@ jobs:
       env:
         USER_NAME: ${{ secrets.USER_NAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
-        CONFIG_FILE: playwright.config.${{ github.event.inputs.environment }}.ts
         PROJECT: ${{ github.event.inputs.project }}
+        PLAYWRIGHT_ENV: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,13 +50,12 @@ jobs:
       - name: Run tests
         run: |
           npm install
-          #CONFIG_FILE=playwright.config.${{ github.event.inputs.environment }}.ts
-          #PROJECT=${{ github.event.inputs.project }}
+  
           echo "Running Playwright tests using ${CONFIG_FILE} on project ${PROJECT}"
           if [ "${PROJECT}" = "all" ]; then
-            npx playwright test --config=${CONFIG_FILE}
+            npx playwright test
           else
-            npx playwright test --config=${CONFIG_FILE} --project=${PROJECT}
+            npx playwright test --project=${PROJECT}
           fi
 
       - uses: actions/upload-artifact@v4
