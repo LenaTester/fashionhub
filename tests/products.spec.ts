@@ -2,12 +2,10 @@ import { test, expect } from '@playwright/test'
 import { ProductsPage } from '../page-objects/products.page';
 import { TopNavigationPanel } from '../page-objects/topNavigation.panel';
 import { ShoppingCartPage } from '../page-objects/shoppingCart.page';
+import fs from 'fs';
 
 
 type EnvKey = 'local' | 'staging' | 'production';
-
-import fs from 'fs';
-import { isDataView } from 'util/types';
 
 function isDocker() {
   // Check for /.dockerenv or if /app exists (common in Docker setups)
@@ -16,8 +14,8 @@ function isDocker() {
 
 const envMap = {
   local: isDocker() ? '/app/playwright/.auth/user-local.json' : '../playwright/.auth/user-local.json',
-  staging: isDocker() ? '/app/playwright/.auth/user-staging.json' : '../playwright/.auth/user-staging.json',
-  production: isDocker() ? '/app/playwright/.auth/user-production.json' : '../playwright/.auth/user-production.json',
+  staging: isDocker() ? '/app/playwright/.auth/user-staging.json' : 'playwright/.auth/user-staging.json',
+  production: isDocker() ? '/app/playwright/.auth/user-production.json' : 'playwright/.auth/user-production.json',
 };
 const currentEnv = (process.env.PLAYWRIGHT_ENV || 'local') as EnvKey;
 const storageStateFile = envMap[currentEnv] || envMap.local;

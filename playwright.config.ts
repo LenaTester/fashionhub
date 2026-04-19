@@ -8,19 +8,19 @@ const environments = {
   production: {
     url: 'https://pocketaces2.github.io/fashionhub/login.html',
     envFile: '.env-production',
-    storageState: 'playwright/.auth/user-production.json',
+    //storageState: 'playwright/.auth/user-production.json',
   },
   staging: {
     url: 'https://staging-env/fashionhub/login.html',
     envFile: '.env-staging',
-    storageState: 'playwright/.auth/user-staging.json',
+    //storageState: 'playwright/.auth/user-staging.json',
   },
   local: {
     url: isDocker
       ? 'http://app:4000/fashionhub/login.html'
       : 'http://localhost:4000/fashionhub/login.html',
     envFile: '.env-local',
-    storageState: 'playwright/.auth/user-local.json',
+    //storageState: 'playwright/.auth/user-local.json',
   },
 };
 
@@ -66,7 +66,6 @@ projects: [
     testIgnore: /auth\.setup\.spec\.ts/,
     use: {
       ...devices['Desktop Chrome'],
-      storageState: 'playwright/.auth/user-production.json',
     },
   },
   {
@@ -75,7 +74,6 @@ projects: [
     testIgnore: /auth\.setup\.spec\.ts/,
     use: {
       ...devices['Desktop Firefox'],
-      storageState: 'playwright/.auth/user-production.json',
     },
   },
   {
@@ -84,7 +82,6 @@ projects: [
     testIgnore: /auth\.setup\.spec\.ts/,
     use: {
       ...devices['Desktop Safari'],
-      storageState: 'playwright/.auth/user-production.json',
     },
   },
 ]

@@ -58,22 +58,15 @@ PLAYWRIGHT_ENV=staging npx playwright test
 PLAYWRIGHT_ENV=local npx playwright test
 ```
 
-### Run tests on a specific browser (e.g. production)
-```bash
-npx playwright test --project=chromium
-npx playwright test --project=firefox
-npx playwright test --project=webkit
-```
-
 ### Run tests on a specific browser and environment
 ```bash
-# Staging environment with Firefox
+# Production environment with Firefox
 PLAYWRIGHT_ENV=production npx playwright test --project=firefox
 ```
 
-### Run a specific test file
+### Run a specific test file and environment
 ```bash
-npx playwright test tests/login.spec.ts
+PLAYWRIGHT_ENV=production npx playwright test tests/login.spec.ts
 ```
 
 ### Run tests in debug/headed mode
