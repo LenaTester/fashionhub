@@ -7,18 +7,18 @@ import fs from 'fs';
 
 type EnvKey = 'local' | 'staging' | 'production';
 
-function isDocker() {
-  // Check for /.dockerenv or if /app exists (common in Docker setups)
-  return fs.existsSync('/.dockerenv') || fs.existsSync('/app');
-}
+// function isDocker() {
+//   // Check for /.dockerenv or if /app exists (common in Docker setups)
+//   return fs.existsSync('/.dockerenv') || fs.existsSync('/app');
+// }
 
-const envMap = {
-  //local: isDocker() ? '/app/playwright/.auth/user-local.json' : '../playwright/.auth/user-local.json',
-  staging: isDocker() ? '/app/playwright/.auth/user-staging.json' : 'playwright/.auth/user-staging.json',
-  production: isDocker() ? '/app/playwright/.auth/user-production.json' : 'playwright/.auth/user-production.json',
-};
+// const envMap = {
+//   //local: isDocker() ? '/app/playwright/.auth/user-local.json' : '../playwright/.auth/user-local.json',
+//   staging: isDocker() ? '/app/playwright/.auth/user-staging.json' : 'playwright/.auth/user-staging.json',
+//   //production: isDocker() ? '/app/playwright/.auth/user-production.json' : 'playwright/.auth/user-production.json',
+// };
 const currentEnv = (process.env.PLAYWRIGHT_ENV || 'local') as EnvKey;
-const storageStateFile = envMap[currentEnv] || envMap.local;
+const storageStateFile = currentEnv || 'local';
 
 test.use({ storageState: storageStateFile });
 
